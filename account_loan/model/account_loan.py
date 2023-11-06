@@ -442,17 +442,15 @@ class AccountLoan(models.Model):
 
     def view_account_moves(self):
         self.ensure_one()
-        result = self.env["ir.actions.act_window"]._for_xml_id(
-            "account.action_move_line_form"
-        )
+        action = self.env.ref("account.action_move_line_form")
+        result = action.read()[0]
         result["domain"] = [("loan_id", "=", self.id)]
         return result
 
     def view_account_invoices(self):
         self.ensure_one()
-        result = self.env["ir.actions.act_window"]._for_xml_id(
-            "account.action_move_out_invoice_type"
-        )
+        action = self.env.ref("account.action_move_out_invoice_type")
+        result = action.read()[0]
         result["domain"] = [("loan_id", "=", self.id), ("move_type", "=", "in_invoice")]
         return result
 

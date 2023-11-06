@@ -20,9 +20,8 @@ class AccountLoanGenerateWizard(models.TransientModel):
 
     def run_leasing(self):
         created_ids = self.env["account.loan"].generate_leasing_entries(self.date)
-        result = self.env["ir.actions.act_window"]._for_xml_id(
-            "account.action_move_out_invoice_type"
-        )
+        action = self.env.ref("account.action_move_out_invoice_type")
+        result = action.read()[0]
         if len(created_ids) == 0:
             return
         result["domain"] = [("id", "in", created_ids), ("type", "=", "in_invoice")]
@@ -30,9 +29,8 @@ class AccountLoanGenerateWizard(models.TransientModel):
 
     def run_loan(self):
         created_ids = self.env["account.loan"].generate_loan_entries(self.date)
-        result = self.env["ir.actions.act_window"]._for_xml_id(
-            "account.action_move_line_form"
-        )
+        action = self.env.ref("account.action_move_line_form")
+        result = action.read()[0]
         if len(created_ids) == 0:
             return
         result["domain"] = [("id", "in", created_ids)]

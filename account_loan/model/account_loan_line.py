@@ -55,21 +55,6 @@ class AccountLoanLine(models.Model):
         readonly=True,
         related="loan_id.long_term_loan_account_id",
     )
-    journal_id = fields.Many2one(
-        "account.journal",
-        readonly=True,
-        related="loan_id.journal_id",
-    )
-    short_term_loan_account_id = fields.Many2one(
-        "account.account",
-        readonly=True,
-        related="loan_id.short_term_loan_account_id",
-    )
-    interest_expenses_account_id = fields.Many2one(
-        "account.account",
-        readonly=True,
-        related="loan_id.interest_expenses_account_id",
-    )
     currency_id = fields.Many2one(
         "res.currency",
         related="loan_id.currency_id",
@@ -121,6 +106,21 @@ class AccountLoanLine(models.Model):
     )
     has_moves = fields.Boolean(compute="_compute_has_moves")
     has_invoices = fields.Boolean(compute="_compute_has_invoices")
+    journal_id = fields.Many2one(
+        "account.journal",
+        readonly=True,
+        related="loan_id.journal_id",
+    )
+    short_term_loan_account_id = fields.Many2one(
+        "account.account",
+        readonly=True,
+        related="loan_id.short_term_loan_account_id",
+    )
+    interest_expenses_account_id = fields.Many2one(
+        "account.account",
+        readonly=True,
+        related="loan_id.interest_expenses_account_id",
+    )
     _sql_constraints = [
         (
             "sequence_loan",
@@ -433,9 +433,8 @@ class AccountLoanLine(models.Model):
 
     def view_account_moves(self):
         self.ensure_one()
-        result = self.env["ir.actions.act_window"]._for_xml_id(
-            "account.action_move_line_form"
-        )
+        action = self.env.ref("account.action_move_line_form")
+        result = action.read()[0]
         result["context"] = {
             "default_loan_line_id": self.id,
             "default_loan_id": self.loan_id.id,
@@ -449,9 +448,8 @@ class AccountLoanLine(models.Model):
 
     def view_account_invoices(self):
         self.ensure_one()
-        result = self.env["ir.actions.act_window"]._for_xml_id(
-            "account.action_move_out_invoice_type"
-        )
+        action = self.env.ref("account.action_move_out_invoice_type")
+        result = action.read()[0]
         result["context"] = {
             "default_loan_line_id": self.id,
             "default_loan_id": self.loan_id.id,
